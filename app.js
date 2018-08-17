@@ -4,12 +4,15 @@ const express = require('express');
 const multipart = require('connect-multiparty');
 const bodyParser = require('body-parser');
 const sharp = require('sharp');
-const config = require('./config');
+
+const BASE_URL = process.env.SCREENSHOT_BASE_URL;
+const KEY = process.env.SCREENSHOT_KEY;
+const PORT = process.env.SCREENSHOT_PORT;
 
 const app = express();
 
 app.post('/', bodyParser.urlencoded({extended: false}), multipart(), (request, response) => {
-    if (!request.body.key || request.body.key !== config.key) {
+    if (!request.body.key || request.body.key !== KEY) {
         response.status(403);
         return response.end('Forbidden');
     }
@@ -26,7 +29,7 @@ app.post('/', bodyParser.urlencoded({extended: false}), multipart(), (request, r
                     response.status(500);
                     return response.end('Internal server error');
                 }
-                return response.end(config.baseUrl + filename);
+                return response.end(BASE_URL + filename);
             });
     } else {
         response.status(400);
@@ -53,4 +56,4 @@ app.get('*', (request, response) => {
     response.end('Not found');
 });
 
-app.listen(config.port);
+app.listen(PORT);
